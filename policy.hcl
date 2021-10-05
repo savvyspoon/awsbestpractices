@@ -2,7 +2,7 @@ policy "ABP-v1.00" {
   description = "AWS Best Practices V1"
   configuration {
     provider "aws" {
-      version = "latest"
+      version = ">= 0.5.0"
     }
   }
 
