@@ -1,20 +1,20 @@
 
-policy "cis-v1.20" {
-  description = "AWS CIS V1.20 Policy"
+policy "ABP-v1.00" {
+  description = "AWS Best Practices V1"
   configuration {
     provider "aws" {
       version = ">= 0.5.0"
     }
   }
 
-  policy "aws-cis-section-1" {
-    description = "AWS CIS Section 1"
+  policy "aws-protect" {
+    description = "AWS Protect Section"
 
-    query "1.1" {
-      description = "AWS CIS 1.1 Avoid the use of 'root' account. Show used in last 30 days (Scored)"
+    query "ACM.1" {
+      description = "Imported ACM certificates should be renewed after a specified time period"
       query =<<EOF
-      SELECT account_id, password_last_used, user_name FROM aws_iam_users
-      WHERE user_name = '<root_account>' AND password_last_used > (now() - '30 days'::interval)
+      SELECT cq_id, meta, account_id, region, id, created_date, description, expiration_date, pem_encoded_certificate, tags
+	  FROM public.aws_apigateway_client_certificates where expiration_date < current_date - integer '30'
     EOF
     }
   }
