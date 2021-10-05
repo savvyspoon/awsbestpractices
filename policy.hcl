@@ -7,13 +7,6 @@ policy "cis-v1.20" {
     }
   }
 
-  view "aws_log_metric_filter_and_alarm" {
-    description = "AWS Log Metric Filter and Alarm"
-    query "aws_log_metric_filter_and_alarm_query" {
-      query = file("queries/aws-log-view.sql")
-    }
-  }
-
   policy "aws-cis-section-1" {
     description = "AWS CIS Section 1"
 
