@@ -30,6 +30,23 @@ policy "ABP-v1.00" {
     EOF
     }
 
+    query "APIGateway.2" {
+      description = "API Gateway REST API stages should be configured to use SSL certificates for backend authentication"
+      query =<<EOF
+      SELECT a.cq_id,  a.stage_name, a.access_log_settings_destination_arn, a.access_log_settings_format, a.client_certificate_id,  b.account_id FROM public.aws_apigatewayv2_api_stages  as a 
+      LEFT OUTER JOIN public.aws_apigatewayv2_apis  as b ON a.cq_id = b.cq_id where client_certificate_id is NULL
+	  FROM public.aws_autoscaling_launch_configurations where instance_monitoring_enabled != true
+    EOF
+    }
+
+    query "APIGateway.3" {
+      description = "API Gateway REST API stages should have AWS X-Ray tracing enabled"
+      query =<<EOF
+      SELECT a.cq_id,  a.stage_name, a.access_log_settings_destination_arn, a.access_log_settings_format, a.client_certificate_id, a.route_settings_data_trace_enabled,  b.account_id FROM public.aws_apigatewayv2_api_stages  as a 
+      LEFT OUTER JOIN public.aws_apigatewayv2_apis  as b ON a.cq_id = b.cq_id where route_settings_data_trace_enabled is false
+    EOF
+    }
+
     query "AutoScaling.1" {
       description = "Auto Scaling groups associated with a load balancer should use load balancer health checks"
       query =<<EOF
@@ -38,6 +55,13 @@ policy "ABP-v1.00" {
     EOF
     }
 
+    query "CloudFront.2" {
+      description = "CloudFront distributions should have origin access identity enabled"
+      query =<<EOF
+      SELECT a.cq_id, a.account_id, a.arn, b.s3_origin_config_origin_access_identity FROM public.aws_cloudfront_distributions as a LEFT OUTER JOIN public.aws_cloudfront_distribution_origins as b 
+      ON a.cq_id = b.cq_id WHERE s3_origin_config_origin_access_identity IS NULL
+    EOF
+    }
 
    }
 }
