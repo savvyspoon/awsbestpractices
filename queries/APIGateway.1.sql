@@ -1,0 +1,1 @@
+SELECT a.cq_id,  a.stage_name, a.access_log_settings_destination_arn, a.access_log_settings_format, a.client_certificate_id,  b.account_id FROM public.aws_apigatewayv2_api_stages as a LEFT OUTER JOIN public.aws_apigatewayv2_apis  as b ON a.cq_id = b.cq_id where client_certificate_id is NULL

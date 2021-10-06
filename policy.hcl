@@ -6,6 +6,12 @@ policy "ABP-v1.00" {
       version = ">= 0.5.0"
     }
   }
+  view "aws_log_metric_filter_and_alarm" {
+    description = "API Gateway REST API stages should be configured to use SSL certificates for backend authentication"
+    query "APIGateway.2" {
+      query = file("queries/APIGateway.1.sql")
+    }
+  }
 
   policy "aws-protect" {
     description = "AWS Protect Section"
@@ -27,13 +33,6 @@ policy "ABP-v1.00" {
       query =<<EOF
       SELECT a.cq_id,  a.stage_name, a.access_log_settings_destination_arn, a.access_log_settings_format,  b.account_id FROM public.aws_apigatewayv2_api_stages  as a 
       LEFT OUTER JOIN public.aws_apigatewayv2_apis  as b ON a.cq_id = b.cq_id where  a.access_log_settings_destination_arn is NULL
-    EOF
-    }
-
-    query "APIGateway.2" {
-      description = "API Gateway REST API stages should be configured to use SSL certificates for backend authentication"
-      query =<<EOF
-      SELECT a.cq_id,  a.stage_name, a.access_log_settings_destination_arn, a.access_log_settings_format, a.client_certificate_id,  b.account_id FROM public.aws_apigatewayv2_api_stages as a LEFT OUTER JOIN public.aws_apigatewayv2_apis  as b ON a.cq_id = b.cq_id where client_certificate_id is NULL
     EOF
     }
 
