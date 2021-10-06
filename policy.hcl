@@ -61,5 +61,36 @@ policy "ABP-v1.00" {
     EOF
     }
 
+    query "CloudFront.3ND" {
+      description = "CloudFront distributions should require encryption in transit"
+      query =<<EOF
+      SELECT a.cq_id, a.account_id, a.arn, b.s3_origin_config_origin_access_identity FROM public.aws_cloudfront_distributions as a LEFT OUTER JOIN public.aws_cloudfront_distribution_origins as b 
+      ON a.cq_id = b.cq_id WHERE s3_origin_config_origin_access_identity IS NULL
+    EOF
+    }
+
+    query "CloudFront.4ND" {
+      description = "CloudFront distributions should have origin failover configured"
+      query =<<EOF
+      SELECT a.cq_id, a.account_id, a.arn, b.s3_origin_config_origin_access_identity FROM public.aws_cloudfront_distributions as a LEFT OUTER JOIN public.aws_cloudfront_distribution_origins as b 
+      ON a.cq_id = b.cq_id WHERE s3_origin_config_origin_access_identity IS NULL
+    EOF
+    }
+
+    query "CloudFront.5ND" {
+      description = "CloudFront distributions should have logging enabled"
+      query =<<EOF
+      SELECT a.cq_id, a.account_id, a.arn, b.s3_origin_config_origin_access_identity FROM public.aws_cloudfront_distributions as a LEFT OUTER JOIN public.aws_cloudfront_distribution_origins as b 
+      ON a.cq_id = b.cq_id WHERE s3_origin_config_origin_access_identity IS NULL
+    EOF
+    }
+
+    query "CloudFront.6" {
+      description = "CloudFront distributions should have AWS WAF enabled"
+      query =<<EOF
+      SELECT account_id, web_acl_id FROM public.aws_cloudfront_distributions where web_acl_id = '' or web_acl_id is null
+    EOF
+    }
+
    }
 }
